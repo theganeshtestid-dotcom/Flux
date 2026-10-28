@@ -34,7 +34,15 @@ jobs:
           bash tool/verify.sh 2>&1 | tee build.log
       - name: Save formatting patch
         if: always()
-        run: git diff -- lib test > format.patch
+        run: |
+          git diff -- lib test > format.patch
+          python3 - <<'PYCODE'
+          import os
+          from pathlib import Path
+          text = Path('build.log').read_text(errors='replace') if Path('build.log').exists() else 'SDK setup stopped. See job steps.'
+          with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as summary:
+              summary.write('## Build verification output\n\n````text\n' + text[-60000:] + '\n````\n')
+          PYCODE
       - uses: actions/upload-artifact@v4
         if: always()
         with:
