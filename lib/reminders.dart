@@ -35,11 +35,11 @@ class Reminders {
     return result;
   }
   Future<void> _sync(Planner store) async {
-    if (!available) return;
+    if (!available) { return; }
     final plans = <Map<String, dynamic>>[];
     for (final key in ['tasks', 'exams']) {
       for (final r in store.list(key)) {
-        if (r['reminder'] != true || r['completed'] == true) continue;
+        if (r['reminder'] != true || r['completed'] == true) { continue; }
         plans.add({'id': r['id'], 'title': r['title'], 'kind': key == 'tasks' ? 'Assignment' : 'Exam', 'date': (r['date'] as String).substring(0, 10), 'minute': r['time'] ?? 540});
       }
     }

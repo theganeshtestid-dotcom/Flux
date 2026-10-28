@@ -12,7 +12,7 @@ void main(){
     calls.clear();
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger.setMockMethodCallHandler(Reminders.channel,(call)async{
       calls.add(call);
-      if(call.method=='status')return {'permitted':true,'precise':true,'pending':1};
+      if(call.method=='status'){ return {'permitted':true,'precise':true,'pending':1}; }
       return null;
     });
   });

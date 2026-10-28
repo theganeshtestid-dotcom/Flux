@@ -45,8 +45,11 @@ jobs:
           with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as summary:
               summary.write('## Build verification output\n\n````text\n' + text[-60000:] + '\n````\n')
           if os.environ['BUILD_STATUS'] != 'success':
-              diagnostic = text[-30000:].replace('%', '%25').replace('\r', '%0D').replace('\n', '%0A')
-              print('::error title=Build check output::' + diagnostic)
+              start = text.find('Analyzing ')
+              diagnostic = text[start:] if start >= 0 else text[-20000:]
+              for i in range(0, min(len(diagnostic), 24000), 2800):
+                  chunk = diagnostic[i:i+2800].replace('%', '%25').replace('\r', '%0D').replace('\n', '%0A')
+                  print(f'::error title=Build output {i//2800+1}::' + chunk)
           PYCODE
       - uses: actions/upload-artifact@v4
         if: always()

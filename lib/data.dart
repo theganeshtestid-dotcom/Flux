@@ -17,7 +17,7 @@ String dateLabel(DateTime d) => '${d.day}/${d.month}/${d.year}';
 String durationLabel(int minutes) => '${minutes ~/ 60}h ${minutes % 60}m';
 String clock(int minutes) => '${(minutes ~/ 60).toString().padLeft(2, '0')}:${(minutes % 60).toString().padLeft(2, '0')}';
 String assignmentStatus(Record r, DateTime now) {
-  if (r['completed'] == true) return 'Completed';
+  if (r['completed'] == true) { return 'Completed'; }
   final due = day(DateTime.parse(r['date']));
   final today = day(now);
   return due.isBefore(today) ? 'Overdue' : due == today ? 'Due Today' : 'Upcoming';
@@ -55,14 +55,14 @@ class Planner extends ChangeNotifier {
       await _open(file);
     } catch (e) {
       final text = e.toString().toLowerCase();
-      if (!(text.contains('corrupt') || text.contains('not a database') || e is FormatException)) rethrow;
+      if (!(text.contains('corrupt') || text.contains('not a database') || e is FormatException)) { rethrow; }
       await log('Database recovery: $e');
       await _db?.close();
       _db = null;
       final suffix = '.damaged-${DateTime.now().millisecondsSinceEpoch}';
       for (final ext in ['', '-wal', '-shm']) {
         final old = File('$file$ext');
-        if (await old.exists()) await old.rename('$file$suffix$ext');
+        if (await old.exists()) { await old.rename('$file$suffix$ext'); }
       }
       _data = empty();
       await _open(file);
@@ -74,14 +74,14 @@ class Planner extends ChangeNotifier {
       await db.execute('CREATE TABLE planner (id INTEGER PRIMARY KEY, payload TEXT NOT NULL)');
     });
     final check = await _db!.rawQuery('PRAGMA quick_check');
-    if (check.first.values.first != 'ok') throw const FormatException('Corrupt database integrity');
+    if (check.first.values.first != 'ok') { throw const FormatException('Corrupt database integrity'); }
     final rows = await _db!.query('planner', where: 'id = 1');
     if (rows.isNotEmpty) {
       final decoded = jsonDecode(rows.first['payload'] as String);
-      if (decoded is! Map<String, dynamic>) throw const FormatException('Invalid planner document');
+      if (decoded is! Map<String, dynamic>) { throw const FormatException('Invalid planner document'); }
       _data = decoded;
       for (final key in ['subjects', 'classes', 'attendance', 'tasks', 'exams', 'sessions']) {
-        if (_data[key] is! List || (_data[key] as List).any((r) => r is! Map)) throw const FormatException('Invalid planner records');
+        if (_data[key] is! List || (_data[key] as List).any((r) => r is! Map)) { throw const FormatException('Invalid planner records'); }
       }
       _validate();
     }
@@ -92,21 +92,21 @@ class Planner extends ChangeNotifier {
     }
     for (final key in ['subjects','classes','attendance','tasks','exams','sessions']) {
       for (final r in list(key)) {
-        if (r['id'] is! int || r['id'] < 1) throw const FormatException('Invalid record ID');
+        if (r['id'] is! int || r['id'] < 1) { throw const FormatException('Invalid record ID'); }
         for (final field in ['teacher','room','notes','topic','subjectName']) {
-          if (r[field] != null && r[field] is! String) throw const FormatException('Invalid text field');
+          if (r[field] != null && r[field] is! String) { throw const FormatException('Invalid text field'); }
         }
-        if (r['subjectId'] != null && r['subjectId'] is! int) throw const FormatException('Invalid subject reference');
-        if (r['completedAt'] != null && (r['completedAt'] is! String || DateTime.tryParse(r['completedAt']) == null)) throw const FormatException('Invalid completion date');
-        if (key == 'subjects' && (r['name'] is! String || (r['name'] as String).trim().isEmpty)) throw const FormatException('Invalid subject');
-        if (key == 'classes' && (r['weekday'] is! int || r['weekday'] < 1 || r['weekday'] > 7 || r['start'] is! int || r['end'] is! int || r['start'] < 0 || r['end'] > 1439 || r['end'] <= r['start'])) throw const FormatException('Invalid class time');
-        if (key != 'subjects' && key != 'classes' && (r['date'] is! String || DateTime.tryParse(r['date']) == null)) throw const FormatException('Invalid record date');
-        if (key == 'classes' && r['startsOn'] != null && (r['startsOn'] is! String || DateTime.tryParse(r['startsOn']) == null)) throw const FormatException('Invalid class start date');
-        if ((key == 'tasks' || key == 'exams') && r['time'] != null && (r['time'] is! int || r['time'] < 0 || r['time'] >= 1440)) throw const FormatException('Invalid deadline time');
-        if (key == 'sessions' && (r['minutes'] is! int || r['minutes'] <= 0)) throw const FormatException('Invalid study duration');
-        if (key == 'attendance' && (r['classId'] is! int || !['Present','Absent'].contains(r['status']))) throw const FormatException('Invalid attendance mark');
-        if ((key == 'tasks' || key == 'exams') && (r['title'] is! String || (r['title'] as String).trim().isEmpty)) throw const FormatException('Invalid title');
-        if ((r['id'] as int) >= (_data['nextId'] as int)) throw const FormatException('Invalid record sequence');
+        if (r['subjectId'] != null && r['subjectId'] is! int) { throw const FormatException('Invalid subject reference'); }
+        if (r['completedAt'] != null && (r['completedAt'] is! String || DateTime.tryParse(r['completedAt']) == null)) { throw const FormatException('Invalid completion date'); }
+        if (key == 'subjects' && (r['name'] is! String || (r['name'] as String).trim().isEmpty)) { throw const FormatException('Invalid subject'); }
+        if (key == 'classes' && (r['weekday'] is! int || r['weekday'] < 1 || r['weekday'] > 7 || r['start'] is! int || r['end'] is! int || r['start'] < 0 || r['end'] > 1439 || r['end'] <= r['start'])) { throw const FormatException('Invalid class time'); }
+        if (key != 'subjects' && key != 'classes' && (r['date'] is! String || DateTime.tryParse(r['date']) == null)) { throw const FormatException('Invalid record date'); }
+        if (key == 'classes' && r['startsOn'] != null && (r['startsOn'] is! String || DateTime.tryParse(r['startsOn']) == null)) { throw const FormatException('Invalid class start date'); }
+        if ((key == 'tasks' || key == 'exams') && r['time'] != null && (r['time'] is! int || r['time'] < 0 || r['time'] >= 1440)) { throw const FormatException('Invalid deadline time'); }
+        if (key == 'sessions' && (r['minutes'] is! int || r['minutes'] <= 0)) { throw const FormatException('Invalid study duration'); }
+        if (key == 'attendance' && (r['classId'] is! int || !['Present','Absent'].contains(r['status']))) { throw const FormatException('Invalid attendance mark'); }
+        if ((key == 'tasks' || key == 'exams') && (r['title'] is! String || (r['title'] as String).trim().isEmpty)) { throw const FormatException('Invalid title'); }
+        if ((r['id'] as int) >= (_data['nextId'] as int)) { throw const FormatException('Invalid record sequence'); }
       }
     }
   }
@@ -154,14 +154,14 @@ class Planner extends ChangeNotifier {
   }
   Future<void> remove(String key, int id) => _commit(() {
     list(key).removeWhere((r) => r['id'] == id);
-    if (key == 'subjects') list('classes').removeWhere((r) => r['subjectId'] == id);
+    if (key == 'subjects') { list('classes').removeWhere((r) => r['subjectId'] == id); }
   });
   String subjectName(dynamic id, [String? fallback]) => list('subjects').where((r) => r['id'] == id).firstOrNull?['name'] as String? ?? fallback ?? 'No subject';
   List<Record> todayClasses(DateTime date) => list('classes').where((r) => r['weekday'] == date.weekday && (r['startsOn'] == null || !day(date).isBefore(DateTime.parse(r['startsOn'])))).toList()..sort((a,b) => (a['start'] as int).compareTo(b['start'] as int));
   Record? markFor(int classId, DateTime date) => list('attendance').where((r) => r['classId'] == classId && r['date'] == day(date).toIso8601String()).firstOrNull;
   Future<void> mark(Record cl, DateTime date, String status) => _commit(() {
-    if (!['Present','Absent'].contains(status) || day(date).isAfter(day(DateTime.now()))) throw ArgumentError('Attendance can only be marked for today or a past date.');
-    if (!todayClasses(date).any((r) => r['id'] == cl['id'])) throw ArgumentError('This class is not scheduled for the selected date.');
+    if (!['Present','Absent'].contains(status) || day(date).isAfter(day(DateTime.now()))) { throw ArgumentError('Attendance can only be marked for today or a past date.'); }
+    if (!todayClasses(date).any((r) => r['id'] == cl['id'])) { throw ArgumentError('This class is not scheduled for the selected date.'); }
     final existing = markFor(cl['id'], date);
     final subject = list('subjects').where((r) => r['id'] == cl['subjectId']).firstOrNull;
     _upsert('attendance', {
