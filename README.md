@@ -30,11 +30,17 @@ Use an attached Android device/emulator; native database, notifications and shar
 - Android local reminders 30 minutes before the device-local deadline (09:00 if no time specified). Android persists the civil deadline and recalculates alarms after timezone/clock changes and reboot. Optional exact-alarm access, inexact fallback, contextual notification permission, and per-channel permission checks. Edits, completion, deletion and global disablement replace/cancel alarms.
 - System/Light/Dark appearance persisted locally. Local error log with clear confirmation.
 
-## Verification status
+## APK download and verification
 
-The SDK download is blocked by the running environment's network policy for `storage.googleapis.com`. Flutter dependency resolution, analysis, tests and APK compilation have **not run**. Unit and widget tests are included but not yet verified. No installable APK has been produced. Allow the Flutter download host in environment settings, then run the commands above and resolve any reported issues before treating the app as ready.
+The GitHub Actions build passed for source commit `8e59bf3fa2aa337c0269b9e1f00647110dd6880d`.
 
-Required device checks: CRUD and restart persistence; attendance correction across all summaries; badge permanence; airplane-mode workflows; notification denial/regrant and reboot; local reminder replacement/cancellation; share success/cancel/failure; missing/corrupted database recovery; large text and both themes. No device tests have run yet.
+[Download APK bundle](https://github.com/theganeshtestid-dotcom/Flux/actions/runs/40701612515/artifacts/12822346920) (sign in to GitHub). Extract the ZIP and install `dist/FLUX.apk`. The bundle also contains the APK checksum, an alternative ZIP, and the build log.
+
+[Successful build](https://github.com/theganeshtestid-dotcom/Flux/actions/runs/40701612515): source manifest check, 9 native reminder-time checks, Flutter dependency resolution, Flutter analysis, Flutter tests, release APK compilation, APK signature verification, and packaged INTERNET-permission rejection all passed. The APK uses a development signing key; it is for testing, not a store release.
+
+No Android device was attached. Actual alarm delivery, permission dialogs, reboot behavior, airplane-mode workflows, SQLite recovery and the native share sheet still require phone testing. A successful build does not establish those device outcomes.
+
+The local cloud environment still blocks Flutter SDK downloads, so compilation was performed on GitHub's runner using the build-only workflow with read-only repository permissions.
 
 ## Design
 
@@ -42,4 +48,4 @@ Required device checks: CRUD and restart persistence; attendance correction acro
 
 ## Audit and focused verification
 
-See [AUDIT.md](AUDIT.md) for repairs and explicit verification limits. `bash tool/test_reminder_time.sh` runs 9 native time tests without Flutter. `bash tool/verify.sh` runs the complete intended pipeline once SDK access is available. Only after a successful full build will `dist/FLUX.apk` and `dist/FLUX-download.zip` exist. Neither exists yet. Android SDK 36 is installed at `/workspace/tools/android-sdk`; Flutter remains blocked at SDK download.
+See [AUDIT.md](AUDIT.md) for repairs and explicit verification limits. `bash tool/test_reminder_time.sh` runs 9 native time tests without Flutter. `bash tool/verify.sh` runs the complete intended pipeline once SDK access is available. The successful GitHub artifact contains `dist/FLUX.apk` and `dist/FLUX-download.zip`; they were built on GitHub, not in this local checkout. Android SDK 36 is installed at `/workspace/tools/android-sdk`; Flutter remains blocked at SDK download.

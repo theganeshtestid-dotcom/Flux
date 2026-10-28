@@ -53,3 +53,9 @@ Not checked:
 - No Android emulator or device is attached. `adb devices` returned an empty list.
 
 Verdict: the identified source defects have repairs and targeted checks, but the app is **not release-verified**. The current environment still blocks `storage.googleapis.com`, which Flutter needs to download Dart/engine artifacts. The required host was saved to the environment draft previously; it is absent from the running enforced policy. No full APK has been generated, and no working-APK download can honestly be provided yet.
+
+## Subsequent APK build verification
+
+[Run 40701612515](https://github.com/theganeshtestid-dotcom/Flux/actions/runs/40701612515) passed for `8e59bf3fa2aa337c0269b9e1f00647110dd6880d`. Flutter analysis, the Flutter test suite, release APK compilation, signature verification and packaged permission inspection now pass. Dart statement-block diagnostics found during this run were fixed without weakening the analysis gate. The earlier unrun statuses above describe the initial local audit and are superseded for those checks. Actual device notification delivery and other device workflows remain untested.
+
+[Download the APK artifact](https://github.com/theganeshtestid-dotcom/Flux/actions/runs/40701612515/artifacts/12822346920); GitHub sign-in is required. It contains `dist/FLUX.apk`, checksums and the build output. The build uses a development signing key.
